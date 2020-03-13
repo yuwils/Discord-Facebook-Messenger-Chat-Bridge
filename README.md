@@ -4,15 +4,14 @@ A Discord bot that acts as a chat bridge with Facebook Messenger: messages sent 
 
 How it works:
 
-Each Facebook user is associated with an ID and each message thread is designated as either a USER or GROUP thread.
+Each Facebook thread is associated with an ID and each message thread is designated as either a USER or GROUP thread.
 
-When a message is sent in a Discord channel with its name set to be equal to a Facebook users ID and its topic set to be either USER or GROUP, the message will be mirrored to the appropriate Facebook thread.
+When a message is sent in a Discord channel with its name set to be equal to a Facebook thread ID and its topic set to be either USER or GROUP, the message will be mirrored to the appropriate Facebook thread.
 
-
-When a message is sent in Facebook, if a channel exists in Discord with the correct name and topic, the message will be mirrored to that channel: if not, a new channel is created with name = sender ID and topic = the thread type of the message. 
+When a message is sent in Facebook, if a channel exists in Discord with the correct name and topic, the message will be mirrored to that channel: if not, a new channel is created with name = threadID and topic = the thread type of the message usable to return messages.
 
 TODO:
 
 Extend functionality across different guilds: requires a method to search for the desired guild
 
-Implement messaging new users from Discord: requires some way of searching user ID's from Discord. 
+Implement messaging new Facebook users from Discord: requires some way of searching user ID's from Discord. 
