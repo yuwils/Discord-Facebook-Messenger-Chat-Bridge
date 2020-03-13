@@ -9,15 +9,15 @@ import threading
 from threading import Thread
 
 global fb_message
-global fb_message_author
+global fb_thread_id
 global fb_message_name
 global fb_thread_type
 
 #Facebook messenger data is saved as global variables to be used by the Discord client
 fb_message = []
-fb_message_author = ""
-fb_message_name = ""
-fb_thread_type = ""
+fb_thread_id = []
+fb_message_name = []
+fb_thread_type = []
 
 class CustomClient(Client):
 
@@ -25,7 +25,7 @@ class CustomClient(Client):
 
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
 
-        """Updates message text, authorID, author name and thread type to be used by Discord client
+        """Updates message text, threadID, author name and thread type to be used by Discord client
 
            Parameters:
             author_id (string): Unique ID of the message sender
@@ -35,21 +35,21 @@ class CustomClient(Client):
         """
 
         global fb_message
-        global fb_message_author
+        global fb_thread_id
         global fb_message_name
         global fb_thread_type
 
         if message_object.author == self.uid:   
             return
 
-        fb_message_author = message_object.author
+        fb_thread_id.append(thread_id)
     
         fb_message.append(message_object.text)
         
         #retrieves name from dictionary accessed using fetchUserInfo
-        fb_message_name = self.fetchUserInfo(fb_message_author)[fb_message_author].name
+        fb_message_name.append(self.fetchUserInfo(message_object.author)[message_object.author].name)
 
-        fb_thread_type = str(thread_type)[11:15]
+        fb_thread_type.append(str(thread_type)[11:])
         
 class MyClient(discord.Client):
     """An class representing the Discord client that handles behaviour when a message is sent or received from Discord."""
@@ -69,70 +69,71 @@ class MyClient(discord.Client):
         await self.wait_until_ready()
         while not self.is_closed():
             global fb_message
-            global fb_message_author
+            global fb_thread_id
             global fb_message_name
             global fb_thread_type
             
             if fb_thread_type:
-
+                
                 #Current functionality only for one guild
-                guild = self.guilds[0] 
+                guild = self.guilds[0]
 
-                chans = discord.utils.get(guild.text_channels, name=fb_message_author)
+                for i in range(0, len(fb_thread_type), 1):
 
-                if chans:
-                    pass
-                else:
-                    #Creates a new channel if no appropriate channel exists
-                    await guild.create_text_channel(fb_message_author, topic = fb_thread_type)
+                    chans = discord.utils.get(guild.text_channels, name=fb_thread_id[i])
 
-                    #Sends message to channel with name equal to the sender's ID, and topic
-                    #equal to the thread type
-                    chans = discord.utils.get(guild.text_channels, name=fb_message_author) 
+                    if chans:
+                        pass
+                    else:
+                        #Creates a new channel if no appropriate channel exists
+                        await guild.create_text_channel(fb_thread_id[i], topic = fb_thread_type[i])
 
-                channel = self.get_channel(chans.id)
+                        #Sends message to channel with name equal to the sender's ID, and topic
+                        #equal to the thread type
+                        chans = discord.utils.get(guild.text_channels, name=fb_thread_id[i])
 
-                for i in fb_message:
-                    msg = fb_message_name + ': ' + i 
+                    channel = self.get_channel(chans.id)
+                    
+                    msg = fb_message_name[i] + ': ' + fb_message[i]
                     await channel.send(msg)
 
                 fb_message = []
-                fb_message_author = ""
-                fb_message_name = ""
-                fb_thread_type = ""
+                fb_thread_id = []
+                fb_message_name = []
+                fb_thread_type = []
                 
             else:
                 await asyncio.sleep(1)
 
     async def on_message(client, message):
 
-        """Sends message to appropriate Facebook user when message is sent in Discord.
+        """Sends message to appropriate Facebook thread when message is sent in Discord.
 
         Parameters:
             client (MyClient): Instance of custom Discord client
             message (discord.Message): Message object sent in Discord
         """
 
-        latest_message = message.content
-
         if message.author == client.user:   
             return
 
-        server = message.channel
+        channel = message.channel
 
-        message_type_str = server.topic
+        message_type_str = channel.topic
         if message_type_str == 'USER':
             message_type = fbchat.ThreadType.USER
         elif message_type_str == 'GROUP':
             message_type = fbchat.ThreadType.GROUP
         else:
-            print('Channel topic is missing recipient type')
             return
 
-        #Determines ID of recepient from channel name and recipient type from channel topic
-        fbclient.send(fbchat.Message(text=latest_message), thread_id=server.name, thread_type=message_type)
+        latest_message = message.content
+
+        #Determines ID of thread from channel name and recipient type from channel topic
+        fbclient.send(fbchat.Message(text=latest_message), thread_id=channel.name, thread_type=message_type)
 
 if __name__ == "__main__":
+    
     token = input('Enter your Discord bot token: \n')
     email = input('Enter your Facebook email: \n')
     password = input('Enter your Facebook password: \n')
