@@ -133,9 +133,6 @@ class MyClient(discord.Client):
         fbclient.send(fbchat.Message(text=latest_message), thread_id=channel.name, thread_type=message_type)
 
 if __name__ == "__main__":
-
-    import sys
-    print(sys.version)
     
     token = input('Enter your Discord bot token: \n')
     email = input('Enter your Facebook email: \n')
