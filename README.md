@@ -8,7 +8,7 @@ Each Facebook thread is associated with an ID and each message thread is designa
 
 When a message is sent in a Discord channel with its name set to be equal to a Facebook thread ID and its topic set to be either USER or GROUP, the message will be mirrored to the appropriate Facebook thread.
 
-When a message is sent in Facebook, if a channel exists in Discord with the correct name and topic, the message will be mirrored to that channel: if not, a new channel is created with name = threadID and topic = the thread type of the message usable to return messages.
+When a message is sent in Facebook, if a channel exists in Discord with the correct name and topic, the message will be mirrored to that channel: if not, a new channel is created with name = threadID and topic = the thread type of the message. This channel can then be used to return messages.
 
 Requirements:
 
