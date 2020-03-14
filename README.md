@@ -20,7 +20,7 @@ discord.py 1.3.2: https://discordpy.readthedocs.io/en/latest/
 
 TODO:
 
-Extend functionality across different guilds: requires a method to search for the desired guild
+Allow a single instance of bot to operate across multiple guilds: requires a method to search for the desired guild
 
 Implement messaging new Facebook users from Discord: requires some way of searching user ID's from Discord. 
 
