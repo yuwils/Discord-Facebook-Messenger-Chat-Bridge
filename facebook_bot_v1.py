@@ -13,7 +13,7 @@ global fb_thread_id
 global fb_message_name
 global fb_thread_type
 
-#Facebook messenger data is saved as global variables to be used by the Discord client
+#Facebook messenge data is saved as global lists to be used by the Discord client
 fb_message = []
 fb_thread_id = []
 fb_message_name = []
@@ -46,7 +46,7 @@ class CustomClient(Client):
     
         fb_message.append(message_object.text)
         
-        #retrieves name from dictionary accessed using fetchUserInfo
+        #retrieves author name from dictionary accessed using fetchUserInfo
         fb_message_name.append(self.fetchUserInfo(message_object.author)[message_object.author].name)
 
         fb_thread_type.append(str(thread_type)[11:])
@@ -64,8 +64,8 @@ class MyClient(discord.Client):
         print ('Logged on successfully')
 
     async def my_background_task(self):
-        """Background task that sends message sent from Facebook to an appropriate Discord channel
-        when global Facebook messenge data is updated"""
+        """Background task that mirrors message sent from Facebook to an appropriate Discord channel
+        when global Facebook message data is updated"""
         await self.wait_until_ready()
         while not self.is_closed():
             global fb_message
@@ -75,7 +75,7 @@ class MyClient(discord.Client):
             
             if fb_thread_type:
                 
-                #Current functionality only for one guild
+                #Current functionality only for one guild per instance of bot
                 guild = self.guilds[0]
 
                 for i in range(0, len(fb_thread_type), 1):
